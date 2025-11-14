@@ -166,10 +166,10 @@ function Nav() {
                 onMouseEnter={() => {
                   setHoverDiv(true);
                 }}
-                className="w-12 h-12 sm:w-16 sm:h-16 bg-amber-50  rounded-full border-2 sm:border-3 border-gray-100 overflow-hidden cursor-pointer"
+                className="w-12 h-12 sm:w-16 sm:h-16 bg-amber-50  rounded-full border-2 sm:border-3 border-gray-100 overflow-hidden cursor-pointer object-cover bg-cover"
               >
                 <img
-                  className="w-full h-full outline-0 border-0"
+                  className="w-full h-full outline-0 border-0 object-cover object-top"
                   src={`
                    ${user.image}`}
                   alt="user image"

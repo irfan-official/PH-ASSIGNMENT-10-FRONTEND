@@ -5,6 +5,7 @@ import { MdLocationPin } from "react-icons/md";
 import { Auth_Context } from "../context/AuthContext";
 import { useContext } from "react";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import swal from "sweetalert";
 
 function AddReview() {
   let [form, setForm] = useState({
@@ -14,8 +15,15 @@ function AddReview() {
     restaurantName: "",
     location: "",
     reviewText: "",
-    ratings: 0,
+    ratings: 5,
   });
+
+  // useEffect(() => {
+  //   swal({
+  //     icon: "error",
+  //     title: "Review added successfully!",
+  //   });
+  // }, []);
 
   const [addReviewsLoader, setAddReviewsLoader] = useState(false);
 
@@ -29,8 +37,7 @@ function AddReview() {
       !form.image.trim() ||
       !form.category.trim() ||
       !form.location.trim() ||
-      !form.reviewText.trim() ||
-      !form.ratings
+      !form.reviewText.trim()
     ) {
       return alert("All field are required");
     }
@@ -59,11 +66,17 @@ function AddReview() {
       });
 
       if (response.data.success) {
-        console.log("Added reviews");
+        swal({
+          icon: "success",
+          title: "Review added successfully!",
+        });
       }
       setAddReviewsLoader(false);
     } catch (error) {
-      alert(error.message);
+      swal({
+        icon: "error",
+        text: `${error.message}`,
+      });
       setAddReviewsLoader(false);
     }
   }
