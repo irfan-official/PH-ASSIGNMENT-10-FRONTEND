@@ -12,6 +12,18 @@ import { Auth_Context } from "./AuthContext.jsx";
 import food_image from "../lib/food_image.js";
 export const Data_Context = createContext();
 
+export async function fetchWithRetry(apiCall, retries = 7, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await apiCall();
+    } catch (err) {
+      if (i === retries - 1) throw err; // last retry — throw error
+      await new Promise((res) => setTimeout(res, delay)); // wait before retry
+      console.log(`Retrying... (${i + 1})`);
+    }
+  }
+}
+
 function DataContext({ children }) {
   let { user, loading } = useContext(Auth_Context);
 
@@ -27,18 +39,6 @@ function DataContext({ children }) {
   const [foodie, setFoodie] = useState(food_image);
 
   const [loader, setLoader] = useState(true);
-
-  async function fetchWithRetry(apiCall, retries = 7, delay = 1000) {
-    for (let i = 0; i < retries; i++) {
-      try {
-        return await apiCall();
-      } catch (err) {
-        if (i === retries - 1) throw err; // last retry — throw error
-        await new Promise((res) => setTimeout(res, delay)); // wait before retry
-        console.log(`Retrying... (${i + 1})`);
-      }
-    }
-  }
 
   const HomeDataFetching = useCallback(async () => {
     try {

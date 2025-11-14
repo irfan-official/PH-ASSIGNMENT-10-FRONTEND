@@ -6,6 +6,7 @@ import { Auth_Context } from "../context/AuthContext";
 import { useContext } from "react";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import swal from "sweetalert";
+import { fetchWithRetry } from "../context/DataContext.jsx";
 
 function AddReview() {
   let [form, setForm] = useState({
@@ -59,11 +60,13 @@ function AddReview() {
 
     try {
       setAddReviewsLoader(true);
-      const response = await AxiosSecureInstance.post("/api/v1/create/review", {
-        name: user.name,
-        email: user.email,
-        ...form,
-      });
+      const response = await fetchWithRetry(
+        AxiosSecureInstance.post("/api/v1/create/review", {
+          name: user.name,
+          email: user.email,
+          ...form,
+        })
+      );
 
       if (response.data.success) {
         swal({
