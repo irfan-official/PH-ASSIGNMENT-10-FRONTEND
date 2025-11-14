@@ -178,7 +178,12 @@ function Nav() {
               {toggleList && (
                 <ul
                   onMouseLeave={() => {
-                    setToggleList(false);
+                    setTimeout(() => {
+                      setToggleList(false);
+                    }, 4000);
+                  }}
+                  onMouseEnter={() => {
+                    setToggleList(true);
                   }}
                   className={`absolute ${
                     locationName === "/"
