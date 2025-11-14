@@ -24,7 +24,7 @@ function DataContext({ children }) {
   const [myFavoriteReviews, setMyFavoriteReviews] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
   const [allReviews, setAllReviews] = useState([]);
-  const [foodie, setFoodie] = useState([]);
+  const [foodie, setFoodie] = useState(food_image);
 
   const [loader, setLoader] = useState(true);
 
