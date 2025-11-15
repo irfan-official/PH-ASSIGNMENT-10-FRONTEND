@@ -18,8 +18,13 @@ import Nav from "../components/Nav.jsx";
 import Marquee from "react-fast-marquee";
 
 function Home() {
-  let { limitedReviewsData, usersFeedback, topReviewers, loader } =
-    useContext(Data_Context);
+  let {
+    limitedReviewsData,
+    setLimitedReviewsData,
+    usersFeedback,
+    topReviewers,
+    loader,
+  } = useContext(Data_Context);
 
   const axiosInstance = useAxios();
   const axiosSecureInstance = useAxiosSecure();
@@ -78,9 +83,9 @@ function Home() {
                         (
                           {
                             _id,
-                            user,
                             foodName,
                             image,
+                            user,
                             category,
                             ratings,
                             restaurantName,
@@ -94,6 +99,7 @@ function Home() {
                           <ReviewCard
                             key={String(_id)}
                             reviewId={String(_id)}
+                            index={index}
                             userName={user.name}
                             userImage={user.image}
                             foodName={foodName}
@@ -104,7 +110,9 @@ function Home() {
                             location={location}
                             reviewText={reviewText}
                             createdAt={createdAt}
-                            loveCount={loved.length}
+                            loved={loved}
+                            arr={limitedReviewsData}
+                            updateArr={setLimitedReviewsData}
                           />
                         )
                       )}

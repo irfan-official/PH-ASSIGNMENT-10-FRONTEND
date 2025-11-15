@@ -13,6 +13,16 @@ function MyReviews() {
   const [searchReviews, setSearchReviews] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [filteredReviews, setFilteredReviews] = useState([]);
+  const [myReviews, setMyReviews] = useState([]);
+
+  useEffect(() => {
+    const filteredMyReviews = allReviews.filter(({ user }, index) => {
+      let res = localStorage.getItem("_id") === String(user._id);
+      return res;
+    });
+
+    setMyReviews(filteredMyReviews);
+  }, [loader, allReviews?.length]);
 
   useEffect(() => {
     // if input empty → clear filtered data
@@ -29,7 +39,7 @@ function MyReviews() {
       const regex = new RegExp(escaped, "i"); // case-insensitive
 
       // filter by matching in serviceName, providerName, or category
-      const matched = allReviews.filter(
+      const matched = myReviews.filter(
         (item) =>
           regex.test(item.category) ||
           regex.test(item.restaurantName) ||
@@ -44,7 +54,7 @@ function MyReviews() {
     } finally {
       setSearchLoading(false);
     }
-  }, [searchReviews, allReviews]);
+  }, [searchReviews, myReviews]);
 
   if (loader) {
     return (
@@ -73,7 +83,7 @@ function MyReviews() {
         >
           <h2 className="_apps-label_ text-[#632EE3] font-semibold flex items-center gap-2 text-[0.9rem] sm:text-[1rem]">
             <span className="px-4 py-2 bg-white rounded-md shadow font-extrabold">
-              {searchReviews ? filteredReviews.length : allReviews.length}
+              {searchReviews ? filteredReviews.length : myReviews.length}
             </span>
             <span className=" underline"> Reviews Found</span>
           </h2>
@@ -155,7 +165,9 @@ function MyReviews() {
                   location={location}
                   reviewText={reviewText}
                   createdAt={createdAt}
-                  loveCount={loved.length}
+                  loved={loved}
+                  arr={myReviews}
+                  updateArr={setMyReviews}
                 />
               )
             )
@@ -165,7 +177,7 @@ function MyReviews() {
             </p>
           )
         ) : (
-          allReviews.map(
+          myReviews.map(
             (
               {
                 _id,
@@ -185,6 +197,7 @@ function MyReviews() {
               <ReviewCard
                 key={String(_id)}
                 reviewId={String(_id)}
+                index={index}
                 userName={user.name}
                 userImage={user.image}
                 foodName={foodName}
@@ -195,7 +208,9 @@ function MyReviews() {
                 location={location}
                 reviewText={reviewText}
                 createdAt={createdAt}
-                loveCount={loved.length}
+                loved={loved}
+                arr={myReviews}
+                updateArr={setMyReviews}
               />
             )
           )

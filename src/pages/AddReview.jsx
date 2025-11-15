@@ -7,6 +7,7 @@ import { useContext } from "react";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import swal from "sweetalert";
 import { fetchWithRetry } from "../context/DataContext.jsx";
+import { Data_Context } from "../context/DataContext.jsx";
 
 function AddReview() {
   let [form, setForm] = useState({
@@ -19,20 +20,16 @@ function AddReview() {
     ratings: 5,
   });
 
-  // useEffect(() => {
-  //   swal({
-  //     icon: "error",
-  //     title: "Review added successfully!",
-  //   });
-  // }, []);
-
   const [addReviewsLoader, setAddReviewsLoader] = useState(false);
 
   const { user } = useContext(Auth_Context);
+  const { setAddReview } = useContext(Data_Context);
   const AxiosSecureInstance = useAxiosSecure();
 
   async function handleSubmit(e) {
     e.preventDefault();
+    e.stopPropagation();
+
     if (
       !form.foodName.trim() ||
       !form.image.trim() ||
@@ -40,27 +37,21 @@ function AddReview() {
       !form.location.trim() ||
       !form.reviewText.trim()
     ) {
-      return alert("All field are required");
+      return swal("All fields are required");
     }
 
     if (form.reviewText.length < 47) {
-      alert("reviewText must be at-least 47 words");
-      return;
+      return swal("reviewText must be at least 47 characters");
     }
 
     if (!form.restaurantName) {
       form.restaurantName = form.category;
     }
 
-    console.log("form ==> ", {
-      name: user.name,
-      email: user.email,
-      ...form,
-    });
-
     try {
       setAddReviewsLoader(true);
-      const response = await fetchWithRetry(
+
+      const response = await fetchWithRetry(() =>
         AxiosSecureInstance.post("/api/v1/create/review", {
           name: user.name,
           email: user.email,
@@ -69,19 +60,26 @@ function AddReview() {
       );
 
       if (response.data.success) {
-        swal({
-          icon: "success",
-          title: "Review added successfully!",
+        swal({ icon: "success", title: "Review added successfully!" });
+        setAddReview((prev) => !prev);
+
+        // reset form after submit
+        setForm({
+          foodName: "",
+          image: "",
+          category: "",
+          restaurantName: "",
+          location: "",
+          reviewText: "",
+          ratings: 5,
         });
       }
-      setAddReviewsLoader(false);
     } catch (error) {
-      swal({
-        icon: "success",
-        title: "Review added successfully!",
-      });
-      setAddReviewsLoader(false);
+      console.error(error);
+      swal({ icon: "error", title: "Failed to add review!" });
     }
+
+    setAddReviewsLoader(false);
   }
 
   function handleFormInput(e) {

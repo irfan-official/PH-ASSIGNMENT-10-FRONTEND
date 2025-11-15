@@ -15,6 +15,16 @@ function MyFavorites() {
   const [searchReviews, setSearchReviews] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [filteredReviews, setFilteredReviews] = useState([]);
+  const [myFavoriteReviews, setMyFavoriteReviews] = useState([]);
+
+  useEffect(() => {
+    let res = allReviews.filter(({ loved }, index) =>
+      loved.includes(localStorage.getItem("_id"))
+    );
+
+    console.log("filtered ====> ", res);
+    setMyFavoriteReviews(res);
+  }, [loader, allReviews?.length]);
 
   useEffect(() => {
     // if input empty → clear filtered data
@@ -31,7 +41,7 @@ function MyFavorites() {
       const regex = new RegExp(escaped, "i"); // case-insensitive
 
       // filter by matching in serviceName, providerName, or category
-      const matched = allReviews.filter(
+      const matched = myFavoriteReviews.filter(
         (item) =>
           regex.test(item.category) ||
           regex.test(item.restaurantName) ||
@@ -46,7 +56,7 @@ function MyFavorites() {
     } finally {
       setSearchLoading(false);
     }
-  }, [searchReviews, allReviews]);
+  }, [searchReviews, myFavoriteReviews]);
 
   if (loader) {
     return (
@@ -75,7 +85,9 @@ function MyFavorites() {
         >
           <h2 className="_apps-label_ text-[#632EE3] font-semibold flex items-center gap-2 text-[0.9rem] sm:text-[1rem]">
             <span className="px-4 py-2 bg-white rounded-md shadow font-extrabold">
-              {searchReviews ? filteredReviews.length : allReviews.length}
+              {searchReviews
+                ? filteredReviews.length
+                : myFavoriteReviews.length}
             </span>
             <span className=" underline"> Reviews Found</span>
           </h2>
@@ -147,9 +159,10 @@ function MyFavorites() {
                 <ReviewCard
                   key={String(_id)}
                   reviewId={String(_id)}
-                  foodName={foodName}
+                  index={index}
                   userName={user.name}
                   userImage={user.image}
+                  foodName={foodName}
                   image={image}
                   category={category}
                   ratings={ratings}
@@ -157,7 +170,9 @@ function MyFavorites() {
                   location={location}
                   reviewText={reviewText}
                   createdAt={createdAt}
-                  loveCount={loved.length}
+                  loved={loved}
+                  arr={myFavoriteReviews}
+                  updateArr={setMyFavoriteReviews}
                 />
               )
             )
@@ -167,7 +182,7 @@ function MyFavorites() {
             </p>
           )
         ) : (
-          allReviews.map(
+          myFavoriteReviews.map(
             (
               {
                 _id,
@@ -187,9 +202,10 @@ function MyFavorites() {
               <ReviewCard
                 key={String(_id)}
                 reviewId={String(_id)}
-                foodName={foodName}
+                index={index}
                 userName={user.name}
                 userImage={user.image}
+                foodName={foodName}
                 image={image}
                 category={category}
                 ratings={ratings}
@@ -197,7 +213,9 @@ function MyFavorites() {
                 location={location}
                 reviewText={reviewText}
                 createdAt={createdAt}
-                loveCount={loved.length}
+                loved={loved}
+                arr={myFavoriteReviews}
+                updateArr={setMyFavoriteReviews}
               />
             )
           )

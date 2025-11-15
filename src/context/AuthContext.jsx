@@ -13,7 +13,8 @@ import {
 } from "firebase/auth";
 import app from "../firebase/firebase.config";
 import { toast, Bounce } from "react-toastify";
-import useAxiosSecure from "../hooks/useAxiosSecure";
+import useAxiosSecure from "../hooks/useAxiosSecure.jsx";
+import useAxios from "../hooks/useAxios.jsx";
 
 export const Auth_Context = createContext();
 
@@ -28,6 +29,7 @@ function AuthContext({ children }) {
   const [loading, setLoading] = useState(true);
 
   const secureAxiosInstance = useAxiosSecure();
+  const axiosInstance = useAxios();
 
   const setToken = (token = "", user) => {
     if (token) {
@@ -66,9 +68,10 @@ function AuthContext({ children }) {
       // send post data to /api/v1/create/user
       secureAxiosInstance
         .post("/api/v1/create/user", { name, email, image: photo_URL })
-        .then((res) =>
-          console.log("response from /api/v1/create/user => ", res.data)
-        )
+        .then((res) => {
+          console.log("response from /api/v1/create/user => ", res.data);
+          localStorage.setItem("_id", res.data._id);
+        })
         .catch((err) => console.error(err));
 
       setUser({
@@ -114,8 +117,22 @@ function AuthContext({ children }) {
       );
       const loggedUser = userCredential.user;
 
+      console.log("loggedUser ===> ", loggedUser);
+
+      axiosInstance
+        .post("/api/v1/login/user", {
+          name: loggedUser.displayName,
+          email: loggedUser.email,
+          image: loggedUser.photoURL,
+        })
+        .then((res) => {
+          // console.log("response from /api/v1/login/user => ", res.data);
+          localStorage.setItem("_id", res.data._id);
+        })
+        .catch((err) => console.error(err));
+
       setToken(loggedUser.accessToken, {
-        name: loggedUser.name,
+        name: loggedUser.displayName,
         email: loggedUser.email,
         image: loggedUser.photoURL,
       });
@@ -247,9 +264,10 @@ function AuthContext({ children }) {
           email: user.email,
           image: user.photoURL,
         })
-        .then((res) =>
-          console.log("response from /api/v1/create/user => ", res.data)
-        )
+        .then((res) => {
+          console.log("response from /api/v1/create/user => ", res.data);
+          localStorage.setItem("_id", res.data._id);
+        })
         .catch((err) => console.error(err));
 
       setUser({
@@ -294,9 +312,12 @@ function AuthContext({ children }) {
         transition: Bounce,
       });
 
+      localStorage.removeItem("_id");
+
       return { success: true };
     } catch (error) {
       console.error("Logout Error:", error.message);
+
       sessionStorage.removeItem("accessToken");
 
       toast.error(`Logout failed: ${error.message}`, {

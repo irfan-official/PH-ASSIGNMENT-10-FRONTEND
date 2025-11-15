@@ -1,44 +1,31 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Data_Context } from "../context/DataContext.jsx";
 import { Auth_Context } from "../context/AuthContext.jsx";
 import ReviewCard from "../components/ReviewCard.jsx";
+import { fetchWithRetry } from "../context/DataContext.jsx";
 
 import { TbApps } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { IoSearch } from "react-icons/io5";
 import { MdReviews } from "react-icons/md";
 
+import useAxios from "../hooks/useAxios.jsx";
+
 function AllReviews() {
-  const { allReviews, loader } = useContext(Data_Context);
+  const {
+    allReviews,
+    setAllReviews,
+    loader,
+    AllReviewsDataFetching,
+    addReview,
+  } = useContext(Data_Context);
   const { user } = useContext(Auth_Context);
 
   const [searchApp, setSearchApp] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
-  const [filteredApps, setFilteredApps] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]);
 
-  useEffect(() => {
-    // console.log("user ===> ", user);
-    if (!searchApp.trim()) {
-      return;
-    }
-
-    setSearchLoading(true);
-
-    try {
-      // Escape special regex characters safely
-      const escaped = searchApp.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(escaped, "i"); // case-insensitive
-
-      console.log("search reviews ===>", regex);
-
-      setFilteredApps(filtered);
-    } catch (err) {
-      console.error("Invalid regex:", err.message);
-      // setFilteredApps(apps);
-    } finally {
-      setSearchLoading(false);
-    }
-  }, [searchApp]);
+  const axiosInstance = useAxios();
 
   if (loader) {
     return (
@@ -47,6 +34,37 @@ function AllReviews() {
       </div>
     );
   }
+
+  function useDebouncedUpdate(delay = 300) {
+    const debounceTimerRef = useRef(null);
+
+    const update = (inputValue) => {
+      setSearchLoading(true);
+      // Clear any previous timer
+      clearTimeout(debounceTimerRef.current);
+
+      // Set new timer
+      debounceTimerRef.current = setTimeout(async () => {
+        try {
+          const req = await axiosInstance.get("/api/v1/search/review", {
+            params: { searchValue: inputValue },
+          });
+
+          if (req.data.success) {
+            setFilteredReviews(req.data.data);
+            setSearchLoading(false);
+          }
+        } catch (err) {
+          console.error("Update failed:", err);
+          setSearchLoading(false);
+        }
+      }, delay);
+    };
+
+    return update;
+  }
+
+  const update = useDebouncedUpdate(300);
 
   return (
     <div className="w-full min-h-[90vh] text-black px-6 sm:px-10 md:px-20 flex flex-col gap-7 sm:gap-10">
@@ -67,7 +85,7 @@ function AllReviews() {
         >
           <h2 className="_apps-label_ text-[#632EE3] font-semibold flex items-center gap-2 text-[0.9rem] sm:text-[1rem]">
             <span className="px-4 py-2 bg-white rounded-md shadow font-extrabold">
-              {searchApp ? filteredApps.length : allReviews.length}
+              {searchApp ? filteredReviews.length : allReviews.length}
             </span>
             <span className=" underline"> Reviews Found</span>
           </h2>
@@ -86,6 +104,7 @@ function AllReviews() {
             <input
               onChange={(e) => {
                 setSearchApp(e.target.value);
+                update(e.target.value);
               }}
               type="text"
               value={searchApp}
@@ -118,8 +137,8 @@ function AllReviews() {
             <div className="col-span-full flex items-center justify-center">
               <span className="loading loading-spinner loading-xl text-[#632EE3]"></span>
             </div>
-          ) : filteredApps.length > 0 ? (
-            filteredApps.map(
+          ) : filteredReviews.length > 0 ? (
+            filteredReviews.map(
               (
                 {
                   _id,
@@ -149,13 +168,15 @@ function AllReviews() {
                   location={location}
                   reviewText={reviewText}
                   createdAt={createdAt}
-                  loveCount={loved.length}
+                  loved={loved}
+                  arr={allReviews}
+                  updateArr={setAllReviews}
                 />
               )
             )
           ) : (
             <p className="col-span-full text-center text-slate-500 font-semibold">
-              No apps found 😢
+              Sorry no reviews found!
             </p>
           )
         ) : (
@@ -179,6 +200,7 @@ function AllReviews() {
               <ReviewCard
                 key={String(_id)}
                 reviewId={String(_id)}
+                index={index}
                 foodName={foodName}
                 userName={user.name}
                 userImage={user.image}
@@ -189,7 +211,9 @@ function AllReviews() {
                 location={location}
                 reviewText={reviewText}
                 createdAt={createdAt}
-                loveCount={loved.length}
+                loved={loved}
+                arr={allReviews}
+                updateArr={setAllReviews}
               />
             )
           )
