@@ -182,10 +182,10 @@ function ReviewDetails() {
       </section>
 
       <section className=" _Comments_ w-full flex flex-col items-start justify-start gap-7 mt-20 ">
-        <section className=" flex gap-2 justify-start items-center  mb-2 ">
+        <section className="_comment-heading_ flex gap-2 justify-start items-center  mb-2 ">
           <h2 className="font-bold text-4xl pb-2">Comments</h2>
           <span className="__number-of-comments_ font-semibold px-2 py-1 bg-slate-950 text-white shadow rounded-sm text-[0.92rem]">
-            112
+            {allComments.length || 0}
           </span>
 
           <span className=" text-[42px] ">
