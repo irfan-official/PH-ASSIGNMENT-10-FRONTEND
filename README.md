@@ -1,16 +1,91 @@
-# React + Vite
+# Food Lovers Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+Food Lovers Frontend is a React-based single-page application where users can share food reviews, react with love, comment on posts, and manage their personal profiles.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+* Share food reviews with images and descriptions.
+* React with **love** to food reviews.
+* Add, view, and manage comments on reviews.
+* Update user profile information (image, display name).
+* Firebase Authentication for login & registration.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Technologies Used
 
-## Expanding the ESLint configuration
+* **React**
+* **Firebase Authentication**
+* **React Router v7**
+* **TanStack React Query**
+* **Axios** for API requests
+* **Tailwind CSS**, DaisyUI
+* **Vite** build tool
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📂 Project Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/irfan-official/Food-Lovers-Frontend.git
+cd frontend
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Create `.env` file
+
+```
+VITE_API_URL=your_backend_api
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+```
+
+### 4. Run development server
+
+```bash
+npm run dev
+```
+
+## 📦 Build for Production
+
+```bash
+npm run build
+```
+
+## 🔧 Deployment
+
+The frontend is deployed using **Vercel**.
+
+## 📁 Folder Structure
+
+```
+src/
+ ├── components/
+ ├── pages/
+ ├── hooks/
+ ├── context/
+ ├── firebase/
+ ├── utils/
+ └── main.jsx
+```
+
+## 🧰 Scripts
+
+```
+ dev       → vite
+ build     → vite build
+ preview   → vite preview
+ lint      → eslint .
+```
+
+## 🤝 Contributions
+
+Pull requests are welcome.
+
+## 📜 License
+
+This project is licensed under the MIT License.

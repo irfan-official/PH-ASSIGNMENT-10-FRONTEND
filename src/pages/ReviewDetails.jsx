@@ -189,6 +189,7 @@ function ReviewDetails() {
             <LiaCommentSolid />
           </span>
         </section>
+
         <section className="_insert_comments_ w-full h-[7.5rem] flex justify-start items-center gap-4 mb-0 ">
           <section className="__left_ h-full w-[85px]  lg:w-[77px] overflow-hidden ">
             <section className="border-3 border-slate-300 w-full h-[70px] lg:h-[75px] rounded-full overflow-hidden object-cover bg-cover shadow-lg bg-amber-600">
@@ -251,6 +252,7 @@ function ReviewDetails() {
             </section>
           </form>
         </section>
+        
         <hr className="w-full border-b-2 border-dotted border-slate-950" />
         <section className="w-full flex flex-col items-start justify-start gap-4">
           {fetchCommentsLoader ? (
